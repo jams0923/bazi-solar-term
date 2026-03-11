@@ -96,16 +96,22 @@ function getYearPillar(dateStr: string, timeStr: string): Pillar {
   const { year } = parseDateParts(dateStr);
   const lichun = getSolarTermByName(year, '立春');
 
-  const [yearStr, monthStr, dayStr] = dateStr.split('-');
-const [hourStr = '0', minuteStr = '0'] = timeStr.split(':');
+  const [birthYearStr, birthMonthStr, birthDayStr] = dateStr.split('-');
+  const [birthHourStr = '0', birthMinuteStr = '0'] = timeStr.split(':');
 
-const year = Number(yearStr);
-const monthIndex = Number(monthStr) - 1;
-const day = Number(dayStr);
-const hour = Number(hourStr);
-const minute = Number(minuteStr);
+  const birthYearNum = Number(birthYearStr);
+  const birthMonthIndex = Number(birthMonthStr) - 1;
+  const birthDayNum = Number(birthDayStr);
+  const birthHourNum = Number(birthHourStr);
+  const birthMinuteNum = Number(birthMinuteStr);
 
-const birthMoment = Date.UTC(year, monthIndex, day, hour, minute);
+  const birthMoment = Date.UTC(
+    birthYearNum,
+    birthMonthIndex,
+    birthDayNum,
+    birthHourNum,
+    birthMinuteNum
+  );
 
   const lichunMoment = lichun
     ? Date.UTC(year, lichun.month - 1, lichun.day, 12, 0, 0)
@@ -399,5 +405,4 @@ export function calculateBazi(input: ChartFormInput): BaziResult {
     tenGods,
     summary,
   };
-
 }
