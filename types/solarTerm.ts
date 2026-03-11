@@ -14,17 +14,7 @@ export type SolarTermPhase =
   | '仲冬'
   | '晚冬';
 
-export type SolarTermEnergyPattern =
-  | '升發'
-  | '擴張'
-  | '外放'
-  | '收斂'
-  | '凝聚'
-  | '沉降'
-  | '轉換'
-  | '過渡'
-  | '穩定'
-  | '平衡';
+export type SolarTermEnergyPattern = string;
 
 export type SolarTermElement = '木' | '火' | '土' | '金' | '水';
 
@@ -49,3 +39,4 @@ export interface SolarTermMeta {
   enabled: boolean;
 
 }
+
