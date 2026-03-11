@@ -16,19 +16,15 @@ export type SolarTermPhase =
 
 export type SolarTermEnergyPattern =
   | '升發'
-  | '啟動'
-  | '外展'
-  | '旺盛'
-  | '高張'
-  | '穩定'
-  | '過渡'
-  | '轉折'
+  | '擴張'
+  | '外放'
   | '收斂'
-  | '修整'
-  | '沉澱'
-  | '蓄積'
-  | '寒凝'
-  | '內聚';
+  | '凝聚'
+  | '沉降'
+  | '轉換'
+  | '過渡'
+  | '穩定'
+  | '平衡';
 
 export type SolarTermElement = '木' | '火' | '土' | '金' | '水';
 
@@ -51,4 +47,5 @@ export interface SolarTermMeta {
   interpretationFocus: string[];
   uiAccent?: string;
   enabled: boolean;
+
 }
