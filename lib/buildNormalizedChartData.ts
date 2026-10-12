@@ -291,10 +291,10 @@ export function buildNormalizedChartData(result: BaziResult): NormalizedChartDat
     meta: {
       gender: result.gender as Gender,
       calendar_type: result.calendarType,
-      timezone: 'Asia/Taipei',
+      timezone: result.timing.timeZone,
       birth_place: result.birthPlace,
-      birth_datetime: `${result.birthDate}T${result.birthTime}:00+08:00`,
-      day_rollover_rule: '00:00',
+      birth_datetime: result.timing.instant,
+      day_rollover_rule: result.timing.dayRollover,
       solar_term_mode: 'jieqi',
     },
     chart: {

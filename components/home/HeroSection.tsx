@@ -15,15 +15,15 @@ export default function HeroSection() {
             className="text-muted"
             style={{ maxWidth: 760, fontSize: 17, lineHeight: 1.8 }}
           >
-            第一版先聚焦於網站流程、排盤表單、結果頁呈現與節氣分析區塊。先建立可部署、可展示、可持續擴充的專案骨架，之後再逐步加入真正的四柱排盤與節氣演算法。
+            以城市歷史時差換算出生瞬間，提供八字、紫微兩個獨立入口。排盤約定、公式估算與探索標籤皆明確列出，方便核對与持續觀察。
           </p>
 
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <Link href="/paipan" className="btn">
               開始排盤
             </Link>
-            <Link href="/result" className="btn btn-secondary">
-              查看結果示意
+            <Link href="/ziwei" className="btn btn-secondary">
+              紫微斗數
             </Link>
           </div>
         </div>

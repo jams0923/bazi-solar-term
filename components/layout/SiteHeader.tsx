@@ -17,10 +17,11 @@ export default function SiteHeader() {
           四柱八字 × 節氣分析
         </Link>
 
-        <nav style={{ display: 'flex', gap: 18 }}>
+        <nav aria-label="主要入口" style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
           <Link href="/">首頁</Link>
-          <Link href="/paipan">開始排盤</Link>
-          <Link href="/result">結果示意</Link>
+          <Link href="/paipan">八字排盤</Link>
+          <Link href="/ziwei">紫微斗數</Link>
+          <Link href="/explore">城市探索</Link>
         </nav>
       </div>
     </header>

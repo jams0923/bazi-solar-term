@@ -314,7 +314,7 @@ export function runSolarTermRulePhase(
     rules.filter((rule) => rule.enabled && rule.phase === phase)
   );
 
-  let state: SolarTermRuleState = {
+  const state: SolarTermRuleState = {
     tags: [],
     scores: initSolarTermScoreBoard(),
     focusThemes: [],

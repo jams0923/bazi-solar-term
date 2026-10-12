@@ -88,12 +88,12 @@ function getPhaseMeta(type: 'previous' | 'current' | 'next') {
 }
 
 function TermMetaChips({ term }: { term: SolarTermMeta }) {
-  const season = safeString((term as any)?.season);
-  const phase = safeString((term as any)?.phase);
-  const element = safeString((term as any)?.element);
-  const subElement = safeString((term as any)?.subElement);
-  const termName = safeString((term as any)?.name);
-  const energyPattern = safeStringArray((term as any)?.energyPattern);
+  const season = safeString(term?.season);
+  const phase = safeString(term?.phase);
+  const element = safeString(term?.element);
+  const subElement = safeString(term?.subElement);
+  const termName = safeString(term?.name);
+  const energyPattern = safeStringArray(term?.energyPattern);
 
   return (
     <div className="solar-interpretation-meta-chips">
@@ -111,20 +111,6 @@ function TermMetaChips({ term }: { term: SolarTermMeta }) {
   );
 }
 
-function SectionTitle({
-  children,
-  hint,
-}: {
-  children: React.ReactNode;
-  hint?: string;
-}) {
-  return (
-    <div className="solar-interpretation-section-title-wrap">
-      <h4 className="solar-interpretation-section-title">{children}</h4>
-      {hint ? <p className="solar-interpretation-section-hint">{hint}</p> : null}
-    </div>
-  );
-}
 
 function ContentPanel({
   title,

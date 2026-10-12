@@ -9,7 +9,9 @@ import { calculateBazi } from '@/lib/bazi';
 import { buildNormalizedChartData } from '@/lib/buildNormalizedChartData';
 import { generateBaziInterpretation } from '@/lib/baziRuleEngine';
 import { buildSolarTermInterpretation } from '@/lib/buildSolarTermInterpretation';
-import type { ChartFormInput } from '@/types/bazi';
+import Link from 'next/link';
+import ChartContext from '@/components/result/ChartContext';
+import { parseBirthQuery } from '@/lib/birthQuery';
 
 interface ResultPageProps {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -18,22 +20,36 @@ interface ResultPageProps {
 export default async function ResultPage({ searchParams }: ResultPageProps) {
   const params = (await searchParams) || {};
 
-  const input: ChartFormInput = {
-    name: typeof params.name === 'string' ? params.name : '',
-    gender:
-      params.gender === 'female'
-        ? 'female'
-        : params.gender === 'other'
-          ? 'other'
-          : 'male',
-    birthDate: typeof params.birthDate === 'string' ? params.birthDate : '1990-01-01',
-    birthTime: typeof params.birthTime === 'string' ? params.birthTime : '12:00',
-    birthPlace: typeof params.birthPlace === 'string' ? params.birthPlace : '台灣 台北',
-    calendarType: params.calendarType === 'lunar' ? 'lunar' : 'solar',
-    includeSolarTerm: params.includeSolarTerm === 'false' ? false : true,
-  };
-
-  const result = calculateBazi(input);
+  if (!params.birthDate || !params.birthTime)
+    return (
+      <section className="section">
+        <div className="container">
+          <h1>請先輸入出生資料</h1>
+          <p>此入口不預設任何人的出生日期。</p>
+          <Link className="btn" href="/paipan">
+            前往八字排盤
+          </Link>
+        </div>
+      </section>
+    );
+  let input;
+  let result;
+  try {
+    input = parseBirthQuery(params);
+    result = calculateBazi(input);
+  } catch (error) {
+    return (
+      <section className="section">
+        <div className="container">
+          <h1>無法排盤</h1>
+          <p role="alert">{error instanceof Error ? error.message : '出生資料無效'}</p>
+          <Link className="btn" href="/paipan">
+            重新輸入
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   if (!input.includeSolarTerm) {
     delete result.solarTerm;
@@ -41,7 +57,9 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   const normalized = buildNormalizedChartData(result);
   const interpretationResult = generateBaziInterpretation(normalized);
-  const solarTermInterpretationPayload = buildSolarTermInterpretation(normalized);
+  const solarTermInterpretationPayload = result.solarTerm
+    ? buildSolarTermInterpretation(normalized)
+    : undefined;
 
   return (
     <section className="section result-page-shell">
@@ -92,6 +110,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
           <div className="result-grid">
             <div className="result-main-col">
+              <ChartContext result={result} />
               <ResultSummary result={result} />
               <BaziChartCard result={result} />
               <TenGodsCard result={result} />
@@ -121,27 +140,29 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
           </div>
         </section>
 
-        <section className="result-page-section result-page-section-analysis">
-          <div className="result-page-section-head">
-            <div>
-              <div className="result-page-section-kicker">節氣動態</div>
-              <h2 className="result-page-section-title">把節氣節奏一起放進來看</h2>
+        {solarTermInterpretationPayload && (
+          <section className="result-page-section result-page-section-analysis">
+            <div className="result-page-section-head">
+              <div>
+                <div className="result-page-section-kicker">節氣動態</div>
+                <h2 className="result-page-section-title">把節氣節奏一起放進來看</h2>
+              </div>
+
+              <p className="result-page-section-desc">
+                這一段不是只看固定命盤，而是把前節氣、當前節氣與下節氣一起納入，觀察最近較容易被放大的感受、事件節奏與轉場方向。
+              </p>
             </div>
 
-            <p className="result-page-section-desc">
-              這一段不是只看固定命盤，而是把前節氣、當前節氣與下節氣一起納入，觀察最近較容易被放大的感受、事件節奏與轉場方向。
-            </p>
-          </div>
-
-          <div className="result-page-analysis-block">
-            <SolarTermInterpretationCard
-              previousTerm={solarTermInterpretationPayload.previousTerm}
-              currentTerm={solarTermInterpretationPayload.currentTerm}
-              nextTerm={solarTermInterpretationPayload.nextTerm}
-              interpretation={solarTermInterpretationPayload.interpretation}
-            />
-          </div>
-        </section>
+            <div className="result-page-analysis-block">
+              <SolarTermInterpretationCard
+                previousTerm={solarTermInterpretationPayload.previousTerm}
+                currentTerm={solarTermInterpretationPayload.currentTerm}
+                nextTerm={solarTermInterpretationPayload.nextTerm}
+                interpretation={solarTermInterpretationPayload.interpretation}
+              />
+            </div>
+          </section>
+        )}
 
         <footer className="result-page-footer-note">
           <p>

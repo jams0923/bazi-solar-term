@@ -21,6 +21,15 @@ export interface ChartFormInput {
   birthPlace: string;
   calendarType: 'solar' | 'lunar';
   includeSolarTerm: boolean;
+  cityId?: string;
+  timeZone?: string;
+  offsetMinutes?: number;
+  disambiguation?: 'earlier' | 'later';
+  trueSolarTime?: boolean;
+  dayRollover?: '00:00' | '23:00';
+  leapMonth?: boolean;
+  leapRule?: 'split' | 'same';
+  ziweiGender?: 'male' | 'female';
 }
 
 export interface HiddenStem {
@@ -82,4 +91,7 @@ export interface BaziResult {
     hour: PillarTenGods;
   };
   summary: string;
+  calendar: { solar: string; lunar: string };
+  timing: { instant: string; offset: number; timeZone: string; chartDate: string; chartTime: string; correctionMinutes: number; warnings: string[]; dayRollover: '00:00' | '23:00' };
+  climate: { heat: number; moisture: number; reasons: string[] };
 }

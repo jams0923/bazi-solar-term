@@ -1752,3 +1752,31 @@ select {
     line-height: 1.85;
   }
 }
+/* Shared birth workflows preserve the existing dark/gold palette. */
+.birth-panel { padding: 24px; margin: 20px 0; line-height: 1.8; }
+.birth-grid, .explore-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 18px; }
+.birth-panel label, .explore-section label { display: grid; gap: 8px; margin: 10px 0; }
+.birth-panel input:not([type=checkbox]), .birth-panel select, .birth-panel textarea, .explore-section input { min-width: 0; width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); color: var(--text); }
+.birth-panel .check-label { display: flex; align-items: center; gap: 10px; }
+.birth-panel details { margin: 18px 0; }
+.action-row { display: flex; flex-wrap: wrap; gap: 12px; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 3px; }
+.timing-note { padding: 12px; border-left: 3px solid var(--gold); background: rgba(200,169,107,.07); overflow-wrap: anywhere; }
+.error-note { color: var(--danger); }
+.chart-output { display: grid; gap: 20px; margin-top: 32px; }
+.explore-section { margin-top: 32px; }
+.explore-section li { overflow-wrap: anywhere; }
+.ziwei-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.ziwei-center { grid-row: 2 / 4; grid-column: 2 / 4; text-align: center; padding: 24px; align-self: center; }
+.ziwei-palace { padding: 14px; min-height: 180px; }
+.palace-title, .star-button, .mutation-button { border: 0; background: transparent; color: var(--gold-2); padding: 6px 2px; text-align: left; }
+.palace-title { font-weight: 800; width: 100%; }
+.star-group { display: inline-flex; flex-wrap: wrap; align-items: center; margin-right: 8px; }
+.star-button { color: var(--text); font-size: .9rem; }
+.mutation-button { border: 1px solid var(--gold); border-radius: 6px; padding: 1px 5px; }
+.palace-age { font-size: .85rem; color: var(--muted); }
+.explanation-dialog { max-width: min(680px, calc(100vw - 32px)); max-height: 85vh; overflow-y: auto; border: 1px solid var(--gold); border-radius: 18px; padding: 24px; background: var(--panel); color: var(--text); line-height: 1.9; }
+.explanation-dialog::backdrop { background: rgba(0,0,0,.75); }
+.dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+@media (max-width: 640px) { .site-shell header > .container { flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; } .ziwei-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ziwei-palace { grid-row: auto !important; grid-column: auto !important; min-height: 150px; } .ziwei-center { grid-row: auto; grid-column: 1 / -1; } .birth-panel { padding: 16px; } }
