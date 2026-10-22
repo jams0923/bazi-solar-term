@@ -3,8 +3,8 @@ import { useState } from 'react';
 import BirthForm from './BirthForm';
 import { calculateBazi } from '@/lib/bazi';
 import { buildNormalizedChartData } from '@/lib/buildNormalizedChartData';
-import { generateBaziInterpretation } from '@/lib/baziRuleEngine';
-import { buildSolarTermInterpretation } from '@/lib/buildSolarTermInterpretation';
+import { generateBaziNarrative } from '@/lib/baziNarrative';
+import { buildBirthSolarTermContext } from '@/lib/birthSolarTermContext';
 import type { BaziResult } from '@/types/bazi';
 import BaziChartCard from '@/components/result/BaziChartCard';
 import FiveElementsCard from '@/components/result/FiveElementsCard';
@@ -21,7 +21,7 @@ export default function ChartForm() {
   const [result, setResult] = useState<BaziResult>();
   const normalized = result ? buildNormalizedChartData(result) : undefined;
   const solar =
-    normalized && result?.solarTerm ? buildSolarTermInterpretation(normalized) : undefined;
+    normalized && result?.solarTerm ? buildBirthSolarTermContext(normalized) : undefined;
   return (
     <>
       <BirthForm
@@ -44,8 +44,8 @@ export default function ChartForm() {
           <TenGodsCard result={result} />
           <CareerDirectionsCard overview={getCareerOverview(normalized)} />
           {result.solarTerm && <SolarTermCard result={result} />}
-          <BaziInterpretationCard result={generateBaziInterpretation(normalized)} />
-          {solar && <SolarTermInterpretationCard {...solar} />}
+          <BaziInterpretationCard result={generateBaziNarrative(normalized)} />
+          {solar && <SolarTermInterpretationCard context={solar} />}
           <CityExplorer chart={result.climate} />
         </div>
       )}

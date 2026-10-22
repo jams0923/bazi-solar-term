@@ -8,9 +8,9 @@ import CareerDirectionsCard from '@/components/result/CareerDirectionsCard';
 import SolarTermInterpretationCard from '@/components/result/SolarTermInterpretationCard';
 import { calculateBazi } from '@/lib/bazi';
 import { buildNormalizedChartData } from '@/lib/buildNormalizedChartData';
-import { generateBaziInterpretation } from '@/lib/baziRuleEngine';
+import { generateBaziNarrative } from '@/lib/baziNarrative';
 import { getCareerOverview } from '@/lib/careerDirections';
-import { buildSolarTermInterpretation } from '@/lib/buildSolarTermInterpretation';
+import { buildBirthSolarTermContext } from '@/lib/birthSolarTermContext';
 import Link from 'next/link';
 import ChartContext from '@/components/result/ChartContext';
 import { parseBirthQuery } from '@/lib/birthQuery';
@@ -58,10 +58,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   }
 
   const normalized = buildNormalizedChartData(result);
-  const interpretationResult = generateBaziInterpretation(normalized);
+  const interpretationResult = generateBaziNarrative(normalized);
   const careerOverview = getCareerOverview(normalized);
   const solarTermInterpretationPayload = result.solarTerm
-    ? buildSolarTermInterpretation(normalized)
+    ? buildBirthSolarTermContext(normalized)
     : undefined;
 
   return (
@@ -75,7 +75,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
               <div className="result-page-hero-badges">
                 <span className="badge">四柱排盤結果</span>
                 <span className="badge">24 小時制顯示</span>
-                <span className="badge">節氣整合判讀</span>
+                <span className="badge">出生節氣對照</span>
               </div>
 
               <h1 className="title-xl result-page-title">你的命盤結果已生成</h1>
@@ -93,7 +93,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                   <span>2. 結構與五行輔助資訊</span>
                   <span>3. 進階命理解讀</span>
                   <span>4. 職業方向探索</span>
-                  <span>5. 節氣動態解讀</span>
+                  <span>5. 出生節氣對照</span>
                 </div>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
             </div>
 
             <p className="result-page-section-desc">
-              這一段會把命盤結構整理成更容易閱讀的主結論、個性底色、優勢傾向與平衡建議，幫你從盤面進一步看到較穩定的內在輪廓。
+              逐段對照月令、日主、十神位置與藏干，明列盤面來源及核對問題；不以相同的性格文案套用所有命盤。
             </p>
           </div>
 
@@ -153,28 +153,23 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
             <div className="result-page-section-head">
               <div>
                 <div className="result-page-section-kicker">節氣動態</div>
-                <h2 className="result-page-section-title">把節氣節奏一起放進來看</h2>
+                <h2 className="result-page-section-title">核對出生時的節氣位置</h2>
               </div>
 
               <p className="result-page-section-desc">
-                這一段不是只看固定命盤，而是把前節氣、當前節氣與下節氣一起納入，觀察最近較容易被放大的感受、事件節奏與轉場方向。
+                依出生時間顯示所屬節氣與前後相鄰節氣，並列出月支、日干及本站採用的五行象徵關係。
               </p>
             </div>
 
             <div className="result-page-analysis-block">
-              <SolarTermInterpretationCard
-                previousTerm={solarTermInterpretationPayload.previousTerm}
-                currentTerm={solarTermInterpretationPayload.currentTerm}
-                nextTerm={solarTermInterpretationPayload.nextTerm}
-                interpretation={solarTermInterpretationPayload.interpretation}
-              />
+              <SolarTermInterpretationCard context={solarTermInterpretationPayload} />
             </div>
           </section>
         )}
 
         <footer className="result-page-footer-note">
           <p>
-            本頁內容以命盤結構與節氣節奏為基礎進行整理，適合用來理解個人傾向、階段感受與觀察方向；若後續你還要再做文案統一、版面細修或規則擴充，這一版已經可以作為正式結果頁骨架往下延伸。
+            本頁按輸入的出生時間排盤；進階文字列出規則依據，節氣欄位用來核對出生時節。命理描述適合當作探索題目，仍請以實際經驗核對。
           </p>
         </footer>
       </div>
