@@ -77,7 +77,7 @@ export default function CityExplorer({ chart }: { chart?: { heat: number; moistu
       <div className="card birth-panel">
         <h3>職業探索（獨立於城市分數）</h3>
         <p>
-          請以技能、興趣、工作條件與可取得機會比較職業，不從命盤判定適職，也不使用城市氣候分數排序職業。
+          八字結果頁會根據十神列出可探索的職業方向與命盤依據。請再以技能、興趣、工作條件與可取得機會比較職業；城市氣候分數不參與職業排序。
         </p>
         <label>
           我想探索的工作條件

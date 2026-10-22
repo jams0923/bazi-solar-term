@@ -4,10 +4,12 @@ import FiveElementsCard from '@/components/result/FiveElementsCard';
 import SolarTermCard from '@/components/result/SolarTermCard';
 import TenGodsCard from '@/components/result/TenGodsCard';
 import BaziInterpretationCard from '@/components/result/BaziInterpretationCard';
+import CareerDirectionsCard from '@/components/result/CareerDirectionsCard';
 import SolarTermInterpretationCard from '@/components/result/SolarTermInterpretationCard';
 import { calculateBazi } from '@/lib/bazi';
 import { buildNormalizedChartData } from '@/lib/buildNormalizedChartData';
 import { generateBaziInterpretation } from '@/lib/baziRuleEngine';
+import { getCareerOverview } from '@/lib/careerDirections';
 import { buildSolarTermInterpretation } from '@/lib/buildSolarTermInterpretation';
 import Link from 'next/link';
 import ChartContext from '@/components/result/ChartContext';
@@ -57,6 +59,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
   const normalized = buildNormalizedChartData(result);
   const interpretationResult = generateBaziInterpretation(normalized);
+  const careerOverview = getCareerOverview(normalized);
   const solarTermInterpretationPayload = result.solarTerm
     ? buildSolarTermInterpretation(normalized)
     : undefined;
@@ -78,7 +81,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
               <h1 className="title-xl result-page-title">你的命盤結果已生成</h1>
 
               <p className="result-page-intro">
-                這份結果會先呈現基礎命盤結構，再整理五行、十神與節氣資訊，最後進一步延伸到命盤結構解讀與節氣動態判讀。重點不是絕對定論，而是幫你更清楚看見自己的核心傾向、當前節奏與後續轉向。
+                這份結果會先呈現基礎命盤結構，再整理五行、十神、職業探索與節氣資訊。每項職業方向都有命盤依據與實際檢核問題，幫你從多種角度認識自己的選項。
               </p>
             </div>
 
@@ -89,7 +92,8 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                   <span>1. 基礎命盤結果</span>
                   <span>2. 結構與五行輔助資訊</span>
                   <span>3. 進階命理解讀</span>
-                  <span>4. 節氣動態解讀</span>
+                  <span>4. 職業方向探索</span>
+                  <span>5. 節氣動態解讀</span>
                 </div>
               </div>
             </div>
@@ -138,6 +142,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
           <div className="result-page-analysis-block">
             <BaziInterpretationCard result={interpretationResult} />
           </div>
+        </section>
+
+        <section className="result-page-section" id="career-directions">
+          <CareerDirectionsCard overview={careerOverview} />
         </section>
 
         {solarTermInterpretationPayload && (
