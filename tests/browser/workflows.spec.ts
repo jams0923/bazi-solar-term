@@ -13,6 +13,9 @@ test('independent empty entry and local-only bazi calculation preserve existing 
   await enterBirth(page);
   await page.getByRole('button', { name: '開始排盤', exact: true }).click();
   await expect(page.getByRole('heading', { name: '你的命盤結果已生成' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '可以先探索的職業方向' })).toBeVisible();
+  await expect(page.locator('.career-direction')).toHaveCount(3);
+  await expect(page.locator('.career-direction').first().getByText('這張命盤的依據')).toBeVisible();
   await expect(page.getByText('國曆 2000-01-01 ／農曆', { exact: false })).toBeVisible();
   await expect(page.getByRole('heading', { name: '城市與國家探索' })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });

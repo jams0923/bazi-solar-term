@@ -12,6 +12,8 @@ import TenGodsCard from '@/components/result/TenGodsCard';
 import ResultSummary from '@/components/result/ResultSummary';
 import SolarTermCard from '@/components/result/SolarTermCard';
 import BaziInterpretationCard from '@/components/result/BaziInterpretationCard';
+import CareerDirectionsCard from '@/components/result/CareerDirectionsCard';
+import { getCareerOverview } from '@/lib/careerDirections';
 import SolarTermInterpretationCard from '@/components/result/SolarTermInterpretationCard';
 import ChartContext from '@/components/result/ChartContext';
 import CityExplorer from '@/components/explore/CityExplorer';
@@ -40,6 +42,7 @@ export default function ChartForm() {
             <FiveElementsCard result={result} />
           </div>
           <TenGodsCard result={result} />
+          <CareerDirectionsCard overview={getCareerOverview(normalized)} />
           {result.solarTerm && <SolarTermCard result={result} />}
           <BaziInterpretationCard result={generateBaziInterpretation(normalized)} />
           {solar && <SolarTermInterpretationCard {...solar} />}
