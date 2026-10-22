@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { cities } from '@/data/cities';
-import { scoreCity, countrySummaries, climateIndex } from '@/lib/exploration';
+import { scoreCity, countrySummaries, climateIndex, explorationPercent } from '@/lib/exploration';
 import { getHiddenStemsByBranch } from '@/lib/hiddenStems';
 import { combinationMeaning } from '@/data/ziweiMeanings';
 const pillar = (stem: string, branch: string) => ({
@@ -24,6 +24,13 @@ test('Sites heat/moisture thresholds and opposite target remain explicit', () =>
   assert.equal(score.heat, 0);
   assert.equal(score.moisture, 3);
   assert.equal(score.total, 3);
+  assert.equal(score.percent, 38);
+});
+test('exploratory percentages normalize the 8-point scale, including the endpoints', () => {
+  assert.equal(explorationPercent(0), 0);
+  assert.equal(explorationPercent(5), 63);
+  assert.equal(explorationPercent(8), 100);
+  assert.equal(explorationPercent(9), 100);
 });
 test('each axis and total is bounded for all exploration inputs', () => {
   for (let heat = -3; heat <= 3; heat++)
@@ -49,6 +56,7 @@ test('country results only contain the actual catalog sample', () => {
     country.mean,
     sample.map((c) => scoreCity(c, chart).total).reduce((a, b) => a + b, 0) / sample.length
   );
+  assert.equal(country.percent, explorationPercent(country.mean));
   assert.deepEqual(countrySummaries(chart, []), []);
 });
 test('palace/star combinations change with actual stars and domain', () => {

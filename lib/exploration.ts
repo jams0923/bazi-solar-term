@@ -73,6 +73,7 @@ export function scoreCity(city: City, chart: Pick<BaziResult['climate'], 'heat' 
     heat,
     moisture,
     total: heat + moisture,
+    percent: explorationPercent(heat + moisture),
     formalScore: verified ? heat + moisture : null,
     reasons: [
       `互補目標 = 命盤兩軸取相反值：寒熱 ${target.heat}，乾濕 ${target.moisture}`,
@@ -82,16 +83,22 @@ export function scoreCity(city: City, chart: Pick<BaziResult['climate'], 'heat' 
     ],
   };
 }
+// The percentage is a display scale for the site's 8-point heuristic, never a probability.
+export function explorationPercent(points: number) {
+  return Math.round((Math.max(0, Math.min(8, points)) / 8) * 100);
+}
 export function countrySummaries(
   chart: Pick<BaziResult['climate'], 'heat' | 'moisture'>,
   catalog = cities
 ) {
   return [...new Set(catalog.map((c) => c.country))].map((country) => {
     const included = catalog.filter((c) => c.country === country).map((c) => scoreCity(c, chart));
+    const mean = included.reduce((s, c) => s + c.total, 0) / included.length;
     return {
       country,
       included: included.map((c) => c.city.name),
-      mean: included.reduce((s, c) => s + c.total, 0) / included.length,
+      mean,
+      percent: explorationPercent(mean),
     };
   });
 }
