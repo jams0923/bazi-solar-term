@@ -1,8 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { birthCities as cities } from '@/data/cities';
 import { localTimeOptions, resolveBirth, solarInputDate } from '@/lib/birthTime';
 import type { ChartFormInput } from '@/types/bazi';
+import { readBirthSession, restoreBirthSession, writeBirthSession } from '@/lib/birthSession';
 export const emptyBirth: ChartFormInput = {
   gender: 'other',
   birthDate: '',
@@ -27,6 +29,20 @@ export default function BirthForm({
   });
   const [manual, setManual] = useState(false);
   const [error, setError] = useState('');
+  const [ready, setReady] = useState(false);
+  const [restored, setRestored] = useState(false);
+  useEffect(() => {
+    const saved = readBirthSession();
+    if (saved) {
+      setForm((previous) => restoreBirthSession(previous, saved, mode));
+      setManual(saved.manual);
+      setRestored(true);
+    }
+    setReady(true);
+  }, [mode]);
+  useEffect(() => {
+    if (ready) writeBirthSession(form, manual, mode);
+  }, [form, manual, mode, ready]);
   function change<K extends keyof ChartFormInput>(key: K, value: ChartFormInput[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -42,47 +58,13 @@ export default function BirthForm({
     } catch (e) {
       timeError = e instanceof Error ? e.message : '日期無效';
     }
-  function transferIn() {
-    try {
-      const raw = sessionStorage.getItem(`birth-transfer-${mode}`);
-      if (!raw) throw new Error('尚無待帶入資料，請先在另一個入口按「帶入資料」。');
-      const data = JSON.parse(raw) as ChartFormInput;
-      resolveBirth(data);
-      setForm((previous) => ({
-        ...previous,
-        ...data,
-        dayRollover: previous.dayRollover,
-        leapRule: previous.leapRule,
-        ziweiGender: previous.ziweiGender,
-        includeSolarTerm: previous.includeSolarTerm,
-      }));
-      setManual(data.offsetMinutes !== undefined);
-      sessionStorage.removeItem(`birth-transfer-${mode}`);
-      setError('');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '資料無效');
-    }
-  }
-  function transferOut() {
-    try {
-      if (manual && form.offsetMinutes === undefined) throw new Error('請填入手動 UTC 時差。');
-      const data = { ...form, offsetMinutes: manual ? form.offsetMinutes : undefined };
-      resolveBirth(data);
-      sessionStorage.setItem(
-        `birth-transfer-${mode === 'bazi' ? 'ziwei' : 'bazi'}`,
-        JSON.stringify(data)
-      );
-      window.location.assign(mode === 'bazi' ? '/ziwei' : '/paipan');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : '資料無效');
-    }
-  }
   return (
     <div className="card birth-panel">
       <h2>{mode === 'bazi' ? '八字' : '紫微斗數'}出生資料</h2>
       <p className="text-muted">
-        日期及時間請依出生地的當地鐘錶記錄填寫。兩個入口各自計算，只有按下帶入按鈕才共用資料。資料僅在目前分頁使用，不送入網址或伺服器。各入口的換日、閏月與順逆規則不隨資料帶入而改動。
+        日期及時間請依出生地的當地鐘錶記錄填寫。切換八字或紫微時，出生資料會自動帶入；回到首頁會清除。資料僅保存在目前瀏覽器分頁，不放入網址或送至伺服器。各入口的換日、閏月與順逆設定分別保留。
       </p>
+      {restored && <p className="timing-note" role="status">已帶入本次出生資料，請確認排盤設定後按「開始排盤」。</p>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -111,7 +93,16 @@ export default function BirthForm({
             性別
             <select
               value={form.gender}
-              onChange={(e) => change('gender', e.target.value as ChartFormInput['gender'])}
+              onChange={(e) => {
+                const gender = e.target.value as ChartFormInput['gender'];
+                setForm((previous) => ({
+                  ...previous,
+                  gender,
+                  ziweiGender: !previous.ziweiGender || previous.ziweiGender === previous.gender
+                    ? (gender === 'other' ? undefined : gender)
+                    : previous.ziweiGender,
+                }));
+              }}
             >
               <option value="other">不指定／其他</option>
               <option value="male">男</option>
@@ -339,12 +330,9 @@ export default function BirthForm({
           <button className="btn" type="submit">
             開始排盤
           </button>
-          <button className="btn btn-secondary" type="button" onClick={transferIn}>
-            帶入另一入口資料
-          </button>
-          <button className="btn btn-secondary" type="button" onClick={transferOut}>
-            帶入資料至{mode === 'bazi' ? '紫微' : '八字'}
-          </button>
+          <Link className="btn btn-secondary" href={mode === 'bazi' ? '/ziwei' : '/paipan'}>
+            切換至{mode === 'bazi' ? '紫微斗數' : '八字排盤'}
+          </Link>
         </div>
       </form>
     </div>

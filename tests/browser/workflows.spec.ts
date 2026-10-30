@@ -17,7 +17,7 @@ test('independent empty entry and local-only bazi calculation preserve existing 
   await expect(page.locator('.career-direction')).toHaveCount(3);
   await expect(page.locator('.career-direction').first().getByText('這張命盤的依據')).toBeVisible();
   await expect(page.getByText('國曆 2000-01-01 ／農曆', { exact: false })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '城市與國家探索' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '城市符合度' })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true
@@ -25,16 +25,20 @@ test('independent empty entry and local-only bazi calculation preserve existing 
   expect(new URL(page.url()).search).toBe('');
   expect(errors).toEqual([]);
 });
-test('cross-entry birth data is imported only through explicit buttons', async ({ page }) => {
+test('birth details follow navigation from bazi to ziwei and are cleared on returning home', async ({ page }) => {
   await page.goto('/paipan');
   await enterBirth(page);
-  await page.getByRole('button', { name: '帶入資料至紫微', exact: true }).click();
+  await page.getByRole('combobox', { name: '性別', exact: true }).selectOption('male');
+  await page.getByLabel('出生城市').selectOption('new-york');
+  await page.getByRole('link', { name: '切換至紫微斗數' }).click();
   await expect(page).toHaveURL(/\/ziwei$/);
-  await expect(page.getByLabel('出生日期', { exact: true })).toHaveValue('');
-  await page.getByRole('button', { name: '帶入另一入口資料', exact: true }).click();
   await expect(page.getByLabel('出生日期', { exact: true })).toHaveValue('2000-01-01');
+  await expect(page.getByLabel('出生時間（24 小時制）')).toHaveValue('12:00');
+  await expect(page.getByLabel('出生城市')).toHaveValue('new-york');
   await expect(page.getByLabel('日柱／農曆換日約定')).toHaveValue('23:00');
-  await page.getByLabel('傳統大限順逆規則').selectOption('male');
+  await expect(page.getByLabel('傳統大限順逆規則')).toHaveValue('male');
+  await page.reload();
+  await expect(page.getByLabel('出生日期', { exact: true })).toHaveValue('2000-01-01');
   await page.getByRole('button', { name: '開始排盤', exact: true }).click();
   await expect(page.locator('.ziwei-palace')).toHaveCount(12);
   await page.locator('.palace-title').first().click();
@@ -47,6 +51,26 @@ test('cross-entry birth data is imported only through explicit buttons', async (
   await page.locator('.mutation-button').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.getByRole('button', { name: '關閉', exact: true }).click();
+  await page.getByRole('link', { name: '首頁', exact: true }).click();
+  await page.getByRole('link', { name: '紫微斗數', exact: true }).first().click();
+  await expect(page.getByLabel('出生日期', { exact: true })).toHaveValue('');
+});
+test('ziwei to bazi shares unfinished data and preserves each entry’s own settings', async ({ page }) => {
+  await page.goto('/ziwei');
+  await page.getByLabel('姓名／暱稱（選填）').fill('測試');
+  await page.getByLabel('出生日期', { exact: true }).fill('1997-11-02');
+  await page.getByRole('combobox', { name: '性別', exact: true }).selectOption('female');
+  await page.getByLabel('日柱／農曆換日約定').selectOption('00:00');
+  await page.getByRole('link', { name: '八字排盤', exact: true }).click();
+  await expect(page.getByLabel('出生日期', { exact: true })).toHaveValue('1997-11-02');
+  await expect(page.getByLabel('出生時間（24 小時制）')).toHaveValue('');
+  await expect(page.getByLabel('姓名／暱稱（選填）')).toHaveValue('測試');
+  await page.getByLabel('日柱／農曆換日約定').selectOption('23:00');
+  await page.getByRole('link', { name: '切換至紫微斗數' }).click();
+  await expect(page.getByLabel('日柱／農曆換日約定')).toHaveValue('00:00');
+  await expect(page.getByLabel('傳統大限順逆規則')).toHaveValue('female');
+  await page.getByRole('link', { name: '切換至八字排盤' }).click();
+  await expect(page.getByLabel('日柱／農曆換日約定')).toHaveValue('23:00');
 });
 test('spring gap is rejected; autumn overlap has an explicit time selector', async ({ page }) => {
   await page.goto('/paipan');
